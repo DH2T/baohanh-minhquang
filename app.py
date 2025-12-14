@@ -13,7 +13,7 @@ st.markdown("---")
 # Để lấy link CSV: Thay đoạn cuối link Google Sheet từ /edit#gid=0 thành /export?format=csv
 @st.cache_data
 def load_data():
-    sheet_id = "ID_CUA_SHEET_GOOGLE_O_DAY" # Lấy ID từ URL của sheet
+    sheet_id = "115NEuESwsu4YeFWlcoLh_1t04_7CdPtGPkMmKvZFSeo" # Lấy ID từ URL của sheet
     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
     return pd.read_csv(url)
 
