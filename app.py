@@ -57,14 +57,15 @@ if not df.empty:
                     st.metric("Trạng Thái", result.iloc[0]['Trang_Thai'])
                     st.metric("Ngày Hết Hạn", result.iloc[0]['Ngay_Het_Han'])
                 
-                st.info("Nếu cần hỗ trợ kỹ thuật, vui lòng liên hệ hotline: 09xxx...")
+                st.info("Nếu cần hỗ trợ kỹ thuật, vui lòng liên hệ hotline: 0903736414")
             else:
                 st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
         else:
             st.warning("Vui lòng nhập mã máy để tra cứu.")
 # Footer
 st.markdown("---")
-st.caption("© 2024 Biến Áp Minh Quang. All Rights Reserved.")
+st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
