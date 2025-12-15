@@ -72,3 +72,4 @@ if not df.empty:
 st.markdown("---")
 st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
 
+
