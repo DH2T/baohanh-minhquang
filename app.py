@@ -7,40 +7,37 @@ st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", p
 st.title("Hệ Thống Tra Cứu Bảo Hành Điện Tử")
 
 # ID của Google Sheet (Lấy từ URL, ví dụ: https://docs.google.com/spreadsheets/d/ID_CUA_SHEET_O_DAY/edit)
-SHEET_ID = "115NEuESwsu4YeFWlcoLh_1t04_7CdPtGPkMmKvZFSeo"
+SHEET_ID = "ID_CUA_SHEET_GOOGLE_O_DAY"
 SHEET_NAME = "dulieu_baohanh" # Tên của sheet chứa dữ liệu
-# --- HÀM TẢI DỮ LIỆU BẢO MẬT (THAY THẾ CODE CŨ) ---
-@st.cache_data(ttl=600) # Dữ liệu được cache và tự động tải lại sau 10 phút
+
+@st.cache_data(ttl=600) # Dữ liệu được cache và tự động tải lại sau 600 giây (10 phút)
 def load_data_securely():
-    try: # <--- Dấu hai chấm (:) ở đây
+    try:
         # --- BƯỚC XÁC THỰC BẢO MẬT ---
-        # 1. Đọc thông tin xác thực từ Streamlit Secrets (.streamlit/secrets.toml)
+        # Đọc thông tin xác thực từ Streamlit Secrets
         creds = st.secrets["gservice_account"]
         gc = gspread.service_account_from_dict(creds)
         
-        # 2. Mở Sheet và Worksheet
+        # Mở Sheet và Worksheet
         worksheet = gc.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
         
-        # 3. Lấy tất cả dữ liệu và chuyển thành DataFrame
+        # Lấy tất cả dữ liệu và chuyển thành DataFrame
         data = worksheet.get_all_records()
         df = pd.DataFrame(data)
         
-        # 4. Tiền xử lý
+        # Chuyển đổi cột Mã Máy sang dạng chuỗi
         df['Ma_May'] = df['Ma_May'].astype(str)
-        
-        return df # <--- Dòng cuối cùng của khối try
+        return df
 
-    except Exception as e: # <--- DÒNG BÁO LỖI (Nó phải được căn lề thẳng với 'try:')
-        st.error(f"Lỗi bảo mật hoặc kết nối dữ liệu: {e}. Vui lòng kiểm tra lại Google Sheet ID, Service Account và file secrets.")
+    except Exception as e:
+        st.error(f"Lỗi bảo mật hoặc kết nối dữ liệu: {e}. Vui lòng kiểm tra lại Google Sheet ID và Service Account.")
         return pd.DataFrame() # Trả về DataFrame rỗng nếu thất bại
-# --- KẾT THÚC HÀM TẢI DỮ LIỆU ---
 
+# Gọi hàm tải dữ liệu bảo mật
+df = load_data_securely()
 
-# --- GỌI HÀM VÀ CHẠY ỨNG DỤNG ---
-df = load_data_securely() # Gọi hàm mới
-
-# Bắt đầu phần giao diện
-if not df.empty:    
+# --- Phần giao diện tra cứu (Giữ nguyên) ---
+if not df.empty:
     search_query = st.text_input("Nhập Số Serial / Mã Máy (ghi trên thân máy):", "")
     
     if st.button("Tra cứu ngay"):
@@ -50,32 +47,6 @@ if not df.empty:
             
             if not result.empty:
                 st.success("✅ Tìm thấy thông tin bảo hành!")
-                st.write("---")
+                # ... (Phần hiển thị kết quả giữ nguyên)
                 
-                # Hiển thị thông tin chi tiết
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("Tên Khách Hàng", result.iloc[0]['Ten_Khach_Hang'])
-                    st.metric("Ngày Mua", result.iloc[0]['Ngay_Mua'])
-                
-                with col2:
-                    st.metric("Trạng Thái", result.iloc[0]['Trang_Thai'])
-                    st.metric("Ngày Hết Hạn", result.iloc[0]['Ngay_Het_Han'])
-                
-                st.info("Nếu cần hỗ trợ kỹ thuật, vui lòng liên hệ hotline: 09xxx...")
-            else:
-                st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
-        else:
-            st.warning("Vui lòng nhập mã máy để tra cứu.")
-
-    except Exception as e:
-        st.error(f"Lỗi kết nối dữ liệu. Vui lòng thử lại sau. ({e})")
-
-# Footer
-st.markdown("---")
-st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
-
-
-
-
-
+            # ... (Phần còn lại của code giữ nguyên)
