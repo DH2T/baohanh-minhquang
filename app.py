@@ -40,7 +40,8 @@ def load_data_securely():
 df = load_data_securely() # Gọi hàm mới
 
 # Bắt đầu phần giao diện
-if not df.empty:    search_query = st.text_input("Nhập Số Serial / Mã Máy (ghi trên thân máy):", "")
+if not df.empty:    
+    search_query = st.text_input("Nhập Số Serial / Mã Máy (ghi trên thân máy):", "")
     
     if st.button("Tra cứu ngay"):
         if search_query:
@@ -73,6 +74,7 @@ if not df.empty:    search_query = st.text_input("Nhập Số Serial / Mã Máy 
 # Footer
 st.markdown("---")
 st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
