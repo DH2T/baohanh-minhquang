@@ -7,7 +7,7 @@ st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", p
 st.title("Hệ Thống Tra Cứu Bảo Hành Điện Tử")
 
 # ID của Google Sheet (Lấy từ URL, ví dụ: https://docs.google.com/spreadsheets/d/ID_CUA_SHEET_O_DAY/edit)
-SHEET_ID = "ID_CUA_SHEET_GOOGLE_O_DAY"
+SHEET_ID = "115NEuESwsu4YeFWlcoLh_1t04_7CdPtGPkMmKvZFSeo"
 SHEET_NAME = "dulieu_baohanh" # Tên của sheet chứa dữ liệu
 
 @st.cache_data(ttl=600) # Dữ liệu được cache và tự động tải lại sau 600 giây (10 phút)
@@ -50,3 +50,4 @@ if not df.empty:
                 # ... (Phần hiển thị kết quả giữ nguyên)
                 
             # ... (Phần còn lại của code giữ nguyên)
+
