@@ -62,13 +62,10 @@ if not df.empty:
                 st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
         else:
             st.warning("Vui lòng nhập mã máy để tra cứu.")
-
-    except Exception as e:
-        st.error(f"Lỗi kết nối dữ liệu. Vui lòng thử lại sau. ({e})")
-
 # Footer
 st.markdown("---")
 st.caption("© 2024 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
