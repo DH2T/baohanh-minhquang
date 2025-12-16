@@ -62,9 +62,7 @@ if not df.empty:
                 st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
         else:
             st.warning("Vui lòng nhập mã máy để tra cứu.")
-# Footer
-st.markdown("---")
-st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
