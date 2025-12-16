@@ -1,8 +1,6 @@
 import streamlit as st
-
-# Dòng này phải là lệnh Streamlit đầu tiên trong file app.py
-st.set_page_config(
-    page_title="Bảo hành Biến áp Minh Quang",
+st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
+st.title("Hệ Thống Tra Cứu Bảo Hành Điện Tử"),
     layout="wide",  # Tự động tràn lề trái phải
     initial_sidebar_state="collapsed" # Ẩn thanh bên để tăng không gian
 )
@@ -22,8 +20,7 @@ import pandas as pd
 import gspread # Thêm thư viện gspread
 
 # Cấu hình trang (giữ nguyên)
-st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
-st.title("Hệ Thống Tra Cứu Bảo Hành Điện Tử")
+
 
 # ID của Google Sheet (Lấy từ URL, ví dụ: https://docs.google.com/spreadsheets/d/ID_CUA_SHEET_O_DAY/edit)
 SHEET_ID = "115NEuESwsu4YeFWlcoLh_1t04_7CdPtGPkMmKvZFSeo"
@@ -84,6 +81,7 @@ if not df.empty:
 # Footer
 st.markdown("---")
 st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
