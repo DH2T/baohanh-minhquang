@@ -4,7 +4,7 @@ import gspread # Thêm thư viện gspread
 
 # Cấu hình trang (giữ nguyên)
 st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
-st.h1("Tra Cứu Bảo Hành")
+st.title("TRA CỨU BH")
 
 # ID của Google Sheet (Lấy từ URL, ví dụ: https://docs.google.com/spreadsheets/d/ID_CUA_SHEET_O_DAY/edit)
 SHEET_ID = "115NEuESwsu4YeFWlcoLh_1t04_7CdPtGPkMmKvZFSeo"
@@ -62,6 +62,7 @@ if not df.empty:
                 st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
         else:
             st.warning("Vui lòng nhập mã máy để tra cứu.")
+
 
 
 
