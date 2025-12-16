@@ -1,4 +1,23 @@
 import streamlit as st
+
+# Dòng này phải là lệnh Streamlit đầu tiên trong file app.py
+st.set_page_config(
+    page_title="Bảo hành Biến áp Minh Quang",
+    layout="wide",  # Tự động tràn lề trái phải
+    initial_sidebar_state="collapsed" # Ẩn thanh bên để tăng không gian
+)
+
+# Thêm CSS để loại bỏ khoảng trắng dư thừa ở trên cùng
+st.markdown("""
+    <style>
+        .block-container {
+            padding-top: 1rem;
+            padding-bottom: 0rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    </style>
+""", unsafe_allow_status=True)
 import pandas as pd
 import gspread # Thêm thư viện gspread
 
@@ -65,6 +84,7 @@ if not df.empty:
 # Footer
 st.markdown("---")
 st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
