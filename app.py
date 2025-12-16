@@ -1,4 +1,6 @@
 import streamlit as st
+import pandas as pd
+import gspread # Thêm thư viện gspread
 st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
 st.title("Hệ Thống Tra Cứu Bảo Hành Điện Tử"),
 layout="wide";  # Tự động tràn lề trái phải
@@ -14,8 +16,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_status=True)
-import pandas as pd
-import gspread # Thêm thư viện gspread
+
 
 # Cấu hình trang (giữ nguyên)
 
@@ -79,6 +80,7 @@ if not df.empty:
 # Footer
 st.markdown("---")
 st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
