@@ -1,10 +1,8 @@
 import streamlit as st
 st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
-st.title("Hệ Thống Tra Cứu Bảo Hành Điện Tử");
-    layout="wide";  # Tự động tràn lề trái phải
-    initial_sidebar_state="collapsed" # Ẩn thanh bên để tăng không gian
-)
-
+st.title("Hệ Thống Tra Cứu Bảo Hành Điện Tử"),
+layout="wide";  # Tự động tràn lề trái phải
+initial_sidebar_state="collapsed" # Ẩn thanh bên để tăng không gian
 # Thêm CSS để loại bỏ khoảng trắng dư thừa ở trên cùng
 st.markdown("""
     <style>
@@ -81,6 +79,7 @@ if not df.empty:
 # Footer
 st.markdown("---")
 st.caption("© 2025 Biến Áp Minh Quang. All Rights Reserved.")
+
 
 
 
