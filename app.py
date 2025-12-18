@@ -43,7 +43,7 @@ if not df.empty:
     if st.button("Tra cứu ngay"):
         if search_query:
             # Tìm kiếm (Thêm .str.strip() để loại bỏ khoảng trắng thừa)
-            result = df[df['Ma_May'].str.strip() == search_query.strip()] 
+            result = df[df['SerialNumber'].str.strip() == search_query.strip()] 
             
             if not result.empty:
                 st.success("✅ Tìm thấy thông tin bảo hành!")
@@ -62,6 +62,7 @@ if not df.empty:
                 st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
         else:
             st.warning("Vui lòng nhập Số Serial để tra cứu.")
+
 
 
 
