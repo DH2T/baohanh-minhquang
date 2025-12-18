@@ -26,7 +26,7 @@ def load_data_securely():
         df = pd.DataFrame(data)
         
         # Chuyển đổi cột Mã Máy sang dạng chuỗi
-        df['Ma_May'] = df['Ma_May'].astype(str)
+        df['SerialNumber'] = df['SerialNumber'].astype(str)
         return df
 
     except Exception as e:
@@ -38,7 +38,7 @@ df = load_data_securely()
 
 # --- Phần giao diện tra cứu (Giữ nguyên) ---
 if not df.empty:
-    search_query = st.text_input("Nhập Số Serial / Mã Máy (ghi trên thân máy):", "")
+    search_query = st.text_input("Nhập Số Serial / Quét Mã QR (Dán trên Biến Áp):", "")
     
     if st.button("Tra cứu ngay"):
         if search_query:
@@ -61,7 +61,8 @@ if not df.empty:
             else:
                 st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
         else:
-            st.warning("Vui lòng nhập mã máy để tra cứu.")
+            st.warning("Vui lòng nhập Số Serial để tra cứu.")
+
 
 
 
