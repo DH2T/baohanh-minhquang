@@ -7,8 +7,8 @@ st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", p
 st.title("TRA CỨU BH")
 
 # ID của Google Sheet (Lấy từ URL, ví dụ: https://docs.google.com/spreadsheets/d/ID_CUA_SHEET_O_DAY/edit)
-SHEET_ID = "115NEuESwsu4YeFWlcoLh_1t04_7CdPtGPkMmKvZFSeo"
-SHEET_NAME = "dulieu_baohanh" # Tên của sheet chứa dữ liệu
+SHEET_ID = "1RSgJ18oLmNkK2oL-pImYGLLiPBwENaXSG2_XDc-_pPk"
+SHEET_NAME = "Serial Number" # Tên của sheet chứa dữ liệu
 
 @st.cache_data(ttl=600) # Dữ liệu được cache và tự động tải lại sau 600 giây (10 phút)
 def load_data_securely():
@@ -62,6 +62,7 @@ if not df.empty:
                 st.error("❌ Không tìm thấy mã máy này trong hệ thống. Vui lòng kiểm tra lại.")
         else:
             st.warning("Vui lòng nhập mã máy để tra cứu.")
+
 
 
 
