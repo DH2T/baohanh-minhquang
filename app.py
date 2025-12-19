@@ -3,80 +3,84 @@ import pandas as pd
 import gspread
 from streamlit_qrcode_scanner import qrcode_scanner
 
-# Cấu hình trang
-st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", page_icon="⚡", layout="centered")
+# --- 1. CẤU HÌNH TRANG ---
+st.set_page_config(page_title="Tra Cứu Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
+st.title("⚡ TRA CỨU BẢO HÀNH")
 
-# CSS để làm giao diện đẹp hơn
-st.markdown("""
-    <style>
-    .main { background-color: #f5f7f9; }
-    .stMetric { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .status-active { color: #28a745; font-weight: bold; }
-    .status-expired { color: #dc3545; font-weight: bold; }
-    </style>
-    """, unsafe_allow_html=True)
-
-st.title("⚡ HỆ THỐNG BẢO HÀNH")
-st.info("Hướng dẫn: Đưa camera vào mã QR dán trên thân máy để tra cứu nhanh.")
-
-# --- KẾT NỐI DỮ LIỆU ---
+# --- 2. KẾT NỐI DỮ LIỆU ---
 SHEET_ID = "1RSgJ18oLmNkK2oL-pImYGLLiPBwENaXSG2_XDc-_pPk"
 SHEET_NAME = "Serial Number"
 
 @st.cache_data(ttl=300)
-def load_data():
+def load_data_securely():
     try:
         creds = st.secrets["gservice_account"]
         gc = gspread.service_account_from_dict(creds)
         worksheet = gc.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
-        df = pd.DataFrame(worksheet.get_all_records())
+        data = worksheet.get_all_records()
+        df = pd.DataFrame(data)
         df['SerialNumber'] = df['SerialNumber'].astype(str).str.strip()
         return df
     except Exception as e:
-        st.error("Không thể kết nối dữ liệu.")
+        st.error(f"Lỗi kết nối dữ liệu: {e}")
         return pd.DataFrame()
 
-df = load_data()
+df = load_data_securely()
 
-# --- QUÉT MÃ QR ---
-with st.expander("📷 Mở Camera Quét Mã", expanded=True):
-    qr_code_value = qrcode_scanner(key='scanner')
+# --- 3. NHẬN DIỆN THÔNG TIN (QR & URL) ---
 
-# --- TRA CỨU VÀ HIỂN THỊ ---
-search_query = st.text_input("Hoặc nhập Số Serial thủ công:", value=qr_code_value if qr_code_value else "")
+# A. Lấy mã QR từ Camera (Quét tự động)
+with st.expander("📷 Mở Camera quét mã QR", expanded=True):
+    qr_code_value = qrcode_scanner(key='qrcode_scanner')
 
+# B. Lấy mã Serial từ Link URL (Nếu khách truy cập từ link có ?serial=...)
+url_params = st.query_params
+url_serial = url_params.get("serial", "")
+
+# C. Quyết định giá trị hiển thị trong ô nhập liệu
+# Thứ tự ưu tiên: 1. Vừa quét được > 2. Có sẵn trên Link > 3. Trống
+if qr_code_value:
+    initial_value = qr_code_value
+elif url_serial:
+    initial_value = url_serial
+else:
+    initial_value = ""
+
+# --- 4. GIAO DIỆN TRA CỨU ---
+search_query = st.text_input(
+    "Nhập Số Serial / Quét Mã QR:", 
+    value=initial_value,
+    placeholder="Đưa camera vào mã QR hoặc nhập tay tại đây..."
+).strip()
+
+# --- 5. HIỂN THỊ KẾT QUẢ ---
 if search_query:
-    result = df[df['SerialNumber'] == search_query.strip()]
-    
-    if not result.empty:
-        data = result.iloc[0]
-        st.success(f"✅ Đã tìm thấy Serial: {search_query}")
+    if not df.empty:
+        # Tìm kiếm trong danh sách
+        result = df[df['SerialNumber'] == search_query]
         
-        # Hiển thị thông tin dạng Card
-        st.markdown("### 📋 Thông tin chi tiết")
-        
-        # Chia cột hiển thị
-        c1, c2 = st.columns(2)
-        with c1:
-            st.metric("👤 Khách hàng", data['Ten_Khach_Hang'])
-            st.metric("📅 Ngày mua", str(data['Ngay_Mua']))
+        if not result.empty:
+            st.success(f"✅ Tìm thấy thông tin bảo hành cho mã: {search_query}")
+            st.divider()
             
-        with c2:
-            # Xử lý màu sắc cho trạng thái
-            trang_thai = data['Trang_Thai']
-            st.metric("🛡️ Trạng thái", trang_thai)
-            st.metric("⏳ Hết hạn", str(data['Ngay_Het_Han']))
-
-        # Nút liên hệ nhanh
-        st.divider()
-        st.markdown(f"""
-            <div style="text-align: center;">
-                <p>Cần hỗ trợ về sản phẩm này?</p>
-                <a href="tel:0903736414" style="background-color: #ff4b4b; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">
-                    📞 Gọi Hotline: 0903 736 414
-                </a>
-            </div>
-        """, unsafe_allow_html=True)
-        
+            data = result.iloc[0]
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.metric("Tên Khách Hàng", data.get('Ten_Khach_Hang', 'N/A'))
+                st.metric("Ngày Mua", str(data.get('Ngay_Mua', 'N/A')))
+            
+            with col2:
+                st.metric("Trạng Thái", data.get('Trang_Thai', 'N/A'))
+                st.metric("Ngày Hết Hạn", str(data.get('Ngay_Het_Han', 'N/A')))
+            
+            st.divider()
+            st.info("💡 Hotline hỗ trợ kỹ thuật: 0903.736.414")
+            st.link_button("📞 Gọi ngay cho chúng tôi", "tel:0903736414")
+        else:
+            st.error(f"❌ Không tìm thấy mã máy '{search_query}' trong hệ thống.")
     else:
-        st.error("❌ Không tìm thấy thông tin cho mã này. Vui lòng thử lại.")
+        st.warning("Dữ liệu chưa sẵn sàng. Vui lòng thử lại sau.")
+
+# Nút quay lại website chính ở thanh bên
+st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
