@@ -1,5 +1,5 @@
 streamlit
 pandas
-
 gspread
-streamlit-qrcode-scanner
+opencv-python-headless
+numpy
