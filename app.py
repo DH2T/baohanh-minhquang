@@ -7,9 +7,25 @@ from urllib.parse import urlparse, parse_qs
 # --- 1. CẤU HÌNH TRANG ---
 st.set_page_config(page_title="Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
 
-# Ẩn menu bằng cách đơn giản nhất
-st.markdown("<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}</style>", unsafe_allow_html=True)
-
+# --- 2. ẨN HOÀN TOÀN CÁC THÀNH PHẦN MẶC ĐỊNH (CSS SIÊU SẠCH) ---
+st.markdown("""
+    <style>
+    /* Ẩn dấu 3 chấm góc trên bên phải */
+    #MainMenu {visibility: hidden;}
+    
+    /* Ẩn dòng chữ Hosted with Streamlit ở dưới cùng bên phải */
+    footer {visibility: hidden;}
+    
+    /* Ẩn thanh header màu trắng phía trên cùng */
+    header {visibility: hidden;}
+    
+    /* Giảm bớt khoảng trắng ở phía trên màn hình cho đẹp */
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 # --- 2. KẾT NỐI DỮ LIỆU ---
 @st.cache_data(ttl=300)
 def load_data():
@@ -98,5 +114,6 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
