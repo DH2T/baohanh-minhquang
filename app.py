@@ -32,10 +32,10 @@ if search_serial:
     
     # CHỈNH SỬA QUAN TRỌNG: 
     # Ép kiểu cột SerialNumber về chuỗi và xóa khoảng trắng để so sánh chính xác
-    df['SerialNumber'] = df['SerialNumber'].astype(str).str.strip()
+    df['Serial'] = df['Serial'].astype(str).str.strip()
     
     # Tìm kiếm
-    result = df[df['SerialNumber'] == str(search_serial)]
+    result = df[df['Serial'] == str(search_serial)]
 
     if not result.empty:
         item = result.iloc[0]
@@ -50,5 +50,6 @@ if search_serial:
         st.error(f"Không tìm thấy mã: {search_serial}")
         # Dòng này để bạn kiểm tra xem dữ liệu trong Sheet đang load lên là gì
         with st.expander("Nhấn vào đây để xem danh sách mã đang có trong hệ thống"):
-            st.write(df['SerialNumber'].tolist())
+            st.write(df['Serial'].tolist())
+
 
