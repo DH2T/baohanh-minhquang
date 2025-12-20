@@ -19,14 +19,16 @@ st.markdown("""
     header {visibility: hidden;}
     
     .main-title {
-        font-size: 100px; 
-        color: #FF9800;
-        text-align: center;
-        font-weight: bold;
-        white-space: nowrap; 
-        margin-top: 0px;
-        margin-bottom: 5px;
-        text-transform: uppercase;
+        font-size: 2.5rem !important; 
+        color: #FF9800 !important;
+        text-align: center !important;
+        font-weight: bold !important;
+        white-space: nowrap !important; 
+        margin-top: 0px !important;
+        margin-bottom: 5px !important;
+        text-transform: uppercase !important;
+        display: block !important;
+        width: 100% !important;
     }
     
     .sub-title {
@@ -135,6 +137,7 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
