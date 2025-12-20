@@ -87,7 +87,7 @@ def reset_search():
 if not st.session_state.found:
     # MÀN HÌNH TRA CỨU
     st.markdown('<p class="main-title">TRA CỨU BẢO HÀNH</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-title">BIẾN ÁP MINH QUANG</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">BIẾN ÁP MINH QUANG-CÔNG TY DH2T</p>', unsafe_allow_html=True)
     
     with st.expander("📷 MỞ CAMERA QUÉT MÃ QR", expanded=True):
         scanned_val = qrcode_scanner(key='scanner')
@@ -137,6 +137,7 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
