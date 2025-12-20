@@ -19,7 +19,7 @@ st.markdown("""
     header {visibility: hidden;}
     
     .main-title {
-        font-size: 40px; 
+        font-size: 100px; 
         color: #FF9800;
         text-align: center;
         font-weight: bold;
@@ -135,6 +135,7 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
