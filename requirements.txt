@@ -1,8 +1,3 @@
 streamlit
 pandas
-streamlit_gsheets
-datetime
-
-
-
-
+st-gsheets-connection
