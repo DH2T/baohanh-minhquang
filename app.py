@@ -5,28 +5,71 @@ from streamlit_qrcode_scanner import qrcode_scanner
 from urllib.parse import urlparse, parse_qs
 
 # --- 1. CẤU HÌNH TRANG ---
-st.set_page_config(page_title="Bảo Hành - Biến Áp Minh Quang", page_icon="⚡")
+st.set_page_config(
+    page_title="Bảo Hành - Biến Áp Minh Quang", 
+    page_icon="⚡",
+    layout="centered"
+)
 
-# Cách ẩn footer đơn giản nhất (Không dùng dấu ngoặc nhọn trong Python để tránh lỗi)
-st.markdown("<style>footer {display: none !important;} #MainMenu {display: none !important;} header {display: none !important;}</style>", unsafe_allow_html=True)
+# --- 2. TỐI ƯU GIAO DIỆN (CSS) ---
+# Tách riêng để không bị lỗi xung đột dấu ngoặc Python
+st.markdown("""
+    <style>
+    /* Ẩn Menu, Footer và Header của Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Ép tiêu đề nằm trên 1 hàng và tự co giãn cỡ chữ */
+    .main-title {
+        font-size: clamp(1rem, 6vw, 1.8rem); 
+        color: #FF9800;
+        text-align: center;
+        font-weight: bold;
+        white-space: nowrap; 
+        margin-top: 0px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+    
+    .sub-title {
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
 
-# --- 2. KẾT NỐI DỮ LIỆU ---
+    /* Thu gọn khoảng cách đầu trang */
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Bo góc khung Container của Streamlit */
+    [data-testid="stVerticalBlock"] > div:has(div.stMetric) {
+        border-radius: 15px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- 3. KẾT NỐI DỮ LIỆU ---
 @st.cache_data(ttl=300)
 def load_data():
     try:
         creds = st.secrets["gservice_account"]
         gc = gspread.service_account_from_dict(creds)
+        # ID Sheet của bạn
         sh = gc.open_by_key("1RSgJ18oLmNkK2oL-pImYGLLiPBwENaXSG2_XDc-_pPk")
         df = pd.DataFrame(sh.worksheet("SerialNumber").get_all_records())
         df['Serial'] = df['Serial'].astype(str).str.strip()
         return df
     except Exception as e:
-        st.error(f"Lỗi kết nối: {e}")
+        st.error(f"Lỗi kết nối dữ liệu: {e}")
         return pd.DataFrame()
 
 df = load_data()
 
-# --- 3. HÀM XỬ LÝ SERIAL ---
+# --- 4. HÀM XỬ LÝ CHUỖI QR/URL ---
 def get_serial(text):
     if not text: return ""
     if "http" in text:
@@ -35,30 +78,24 @@ def get_serial(text):
         except: return text
     return text
 
-# --- 4. QUẢN LÝ TRẠNG THÁI (SESSION STATE) ---
+# --- 5. QUẢN LÝ TRẠNG THÁI ---
 if "found" not in st.session_state:
     st.session_state.found = False
-if "reset_trigger" not in st.session_state:
-    st.session_state.reset_trigger = 0
 
-# --- 5. GIAO DIỆN CHÍNH ---
+# --- 6. GIAO DIỆN CHÍNH ---
 
 if not st.session_state.found:
-    st.header("TRA CỨU BẢO HÀNH")
-    st.write("Biến Áp Minh Quang - CTy DH2T")
+    # MÀN HÌNH CHỜ QUÉT/NHẬP
+    st.markdown('<p class="main-title">TRA CỨU BẢO HÀNH</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">BIẾN ÁP MINH QUANG</p>', unsafe_allow_html=True)
     
-    # Khu vực Quét QR - Sử dụng reset_trigger để làm mới scanner khi tra mã khác
-    with st.expander("📷 MỞ CAMERA QUÉT MÃ", expanded=True):
-        scanned_val = qrcode_scanner(key=f'scanner_{st.session_state.reset_trigger}')
+    with st.expander("📷 MỞ CAMERA QUÉT MÃ QR", expanded=True):
+        scanned_val = qrcode_scanner(key='scanner')
     
-    # Lấy mã từ URL
     url_val = st.query_params.get("serial", "")
-    
-    # Xử lý ưu tiên
     input_default = get_serial(scanned_val) if scanned_val else get_serial(url_val)
     
-    # Ô nhập liệu
-    query = st.text_input("Mã Số Serial:", value=input_default, placeholder="Nhập hoặc quét mã...")
+    query = st.text_input("Nhập Số Serial sản phẩm:", value=input_default, placeholder="Đưa camera vào mã QR hoặc nhập tay...")
 
     if query:
         if not df.empty:
@@ -68,43 +105,38 @@ if not st.session_state.found:
                 st.session_state.data = match.iloc[0]
                 st.session_state.query_id = query
                 st.rerun()
-            elif scanned_val or query != "": # Chỉ báo lỗi nếu người dùng đã nhập/quét gì đó
-                st.error(f"Không tìm thấy mã: {query}")
+            else:
+                st.error(f"❌ Không tìm thấy mã máy: {query}")
+
 else:
-    # MÀN HÌNH KẾT QUẢ
+    # MÀN HÌNH HIỂN THỊ KẾT QUẢ
+    st.markdown('<p class="main-title">THÔNG TIN BẢO HÀNH</p>', unsafe_allow_html=True)
+    
     data = st.session_state.data
-    st.success(f"THÔNG TIN BẢO HÀNH: {st.session_state.query_id}")
     
     with st.container(border=True):
         st.markdown(f"### 👤 {data.get('Ten_Khach_Hang', 'Khách hàng')}")
+        st.caption(f"Số Serial: {st.session_state.query_id}")
         st.divider()
         
         col1, col2 = st.columns(2)
         col1.metric("Ngày mua", str(data.get('Ngay_Mua', 'N/A')))
         col2.metric("Hết hạn", str(data.get('Ngay_Het_Han', 'N/A')))
         
+        # Kiểm tra trạng thái không phân biệt hoa thường
         status_raw = str(data.get('Trang_Thai', '')).strip()
         if "còn" in status_raw.lower():
-            st.info(f"✅ **TRẠNG THÁI:** {status_raw}")
+            st.success(f"✅ **TRẠNG THÁI:** {status_raw}")
         else:
             st.error(f"❌ **TRẠNG THÁI:** {status_raw}")
 
-    st.write("")
+    st.write("") 
     
-    # NÚT TRA CỨU MÃ KHÁC (Đã sửa lỗi)
     if st.button("🔍 Tra cứu mã khác", use_container_width=True):
-        # Reset toàn bộ trạng thái
         st.session_state.found = False
-        st.session_state.data = None
-        st.session_state.query_id = ""
-        st.session_state.reset_trigger += 1 # Thay đổi key của scanner để nó khởi động lại
-        st.query_params.clear() # Xóa mã cũ trên thanh địa chỉ URL
         st.rerun()
         
-    st.link_button("📞 Gọi hỗ trợ: 0903.736.414", "tel:0903736414", use_container_width=True, type="primary")
+    st.link_button("📞 Gọi hỗ trợ kỹ thuật", "tel:0903736414", use_container_width=True, type="primary")
 
+# Sidebar tối giản
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
-
-
-
-
