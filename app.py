@@ -1,55 +1,25 @@
 import streamlit as st
-import pandas as pd
 from streamlit_gsheets import GSheetsConnection
+import pandas as pd
 
-# Cấu hình trang
-st.set_page_config(page_title="Bảo Hành Minh Quang", page_icon="⚡")
+st.set_page_config(page_title="Minh Quang Test")
 
-# --- HÀM TẢI DỮ LIỆU ---
-@st.cache_data(ttl=10) # Để 10 giây để bạn cập nhật Sheet là web thấy ngay
-def load_data():
+st.title("Kiểm tra kết nối")
+
+try:
+    # 1. Khởi tạo kết nối
     conn = st.connection("gsheets", type=GSheetsConnection)
-    # Đọc toàn bộ Sheet để tránh lỗi lệch cột
-    df = conn.read(worksheet="SerialNumber")
-    return df
-
-# --- XỬ LÝ LẤY MÃ TỪ LINK QR ---
-# Sửa lỗi: Streamlit bản mới dùng st.query_params thay cho query_params()
-if "id" in st.query_params:
-    st.session_state.serial_input = st.query_params["id"]
-
-st.title("Tra Cứu Bảo Hành")
-
-# Ô nhập mã (Nếu có id từ QR nó sẽ tự điền vào đây)
-search_serial = st.text_input(
-    "Nhập số Serial:", 
-    value=st.session_state.get("serial_input", ""),
-    key="main_input"
-).strip()
-
-if search_serial:
-    df = load_data()
     
-    # CHỈNH SỬA QUAN TRỌNG: 
-    # Ép kiểu cột SerialNumber về chuỗi và xóa khoảng trắng để so sánh chính xác
-    df['Serial'] = df['Serial'].astype(str).str.strip()
+    # 2. Đọc dữ liệu (Thử đọc sheet đầu tiên, không chỉ định tên để tránh lỗi chính tả)
+    df = conn.read() 
     
-    # Tìm kiếm
-    result = df[df['Serial'] == str(search_serial)]
+    st.success("Chúc mừng! Đã kết nối thành công với Google Sheet.")
+    
+    # 3. Hiển thị thử 5 dòng đầu
+    st.write("Dữ liệu tìm thấy:")
+    st.dataframe(df.head())
 
-    if not result.empty:
-        item = result.iloc[0]
-        # Hiển thị kết quả (Dùng bảng đơn giản để chắc chắn không lỗi giao diện)
-        st.success(f"Tìm thấy thông tin cho mã: {search_serial}")
-        
-        st.write(f"**Sản phẩm:** {item['ProductID']}")
-        st.write(f"**Khách hàng:** {item['Ten_Khach_Hang']}")
-        st.write(f"**Hạn bảo hành:** {item['Ngay_Het_Han']}")
-        st.write(f"**Trạng thái:** {item['Trang_Thai']}")
-    else:
-        st.error(f"Không tìm thấy mã: {search_serial}")
-        # Dòng này để bạn kiểm tra xem dữ liệu trong Sheet đang load lên là gì
-        with st.expander("Nhấn vào đây để xem danh sách mã đang có trong hệ thống"):
-            st.write(df['Serial'].tolist())
-
-
+except Exception as e:
+    st.error("Vẫn còn lỗi kết nối!")
+    st.info("Cách xử lý: Bạn hãy kiểm tra đã nhấn 'Share' Google Sheet ở chế độ 'Anyone with the link' chưa?")
+    st.exception(e) # Dòng này sẽ hiện chi tiết lỗi kỹ thuật để ta xử lý tiếp
