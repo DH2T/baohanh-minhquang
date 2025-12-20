@@ -30,8 +30,8 @@ df = load_data_securely()
 # --- 3. NHẬN DIỆN THÔNG TIN (QR & URL) ---
 
 # A. Lấy mã QR từ Camera (Quét tự động)
-#with st.expander("📷 Mở Camera quét mã QR", expanded=True):
-    #qr_code_value = qrcode_scanner(key='qrcode_scanner')
+with st.expander("📷 Mở Camera quét mã QR", expanded=True):
+    qr_code_value = qrcode_scanner(key='qrcode_scanner')
 
 # B. Lấy mã Serial từ Link URL (Nếu khách truy cập từ link có ?serial=...)
 url_params = st.query_params
@@ -39,27 +39,27 @@ url_serial = url_params.get("serial", "")
 
 # C. Quyết định giá trị hiển thị trong ô nhập liệu
 # Thứ tự ưu tiên: 1. Vừa quét được > 2. Có sẵn trên Link > 3. Trống
-#if qr_code_value:
-    #initial_value = qr_code_value
-#if url_serial:
-initial_value = url_serial
-#else:
-    #initial_value = ""
+if qr_code_value:
+    initial_value = qr_code_value
+elif url_serial:
+    initial_value = url_serial
+else:
+    initial_value = ""
 
 # --- 4. GIAO DIỆN TRA CỨU ---
-#search_query = st.text_input(
-    #"Nhập Số Serial / Quét Mã QR:", 
-    #value=initial_value,
-    #placeholder="Đưa camera vào mã QR hoặc nhập tay tại đây..."
-#).strip()
+search_query = st.text_input(
+    "Nhập Số Serial / Quét Mã QR:", 
+    value=initial_value,
+    placeholder="Đưa camera vào mã QR hoặc nhập tay tại đây..."
+).strip()
 
 # --- 5. HIỂN THỊ KẾT QUẢ ---
-#if search_query:
-    #if not df.empty:
+if search_query:
+    if not df.empty:
         # Tìm kiếm trong danh sách
-        #result = df[df['Serial'] == search_query]
+        result = df[df['Serial'] == search_query]
         
-         result.empty:
+        if not result.empty:
             st.success(f"✅ Tìm thấy thông tin bảo hành cho mã: {search_query}")
             st.divider()
             
@@ -84,11 +84,4 @@ initial_value = url_serial
 
 # Nút quay lại website chính ở thanh bên
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
-
-
-
-
-
-
-
 
