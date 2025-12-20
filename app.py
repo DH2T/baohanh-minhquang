@@ -10,7 +10,7 @@ st.set_page_config(page_title="Bảo Hành Minh Quang", page_icon="⚡")
 def load_data():
     conn = st.connection("gsheets", type=GSheetsConnection)
     # Đọc toàn bộ Sheet để tránh lỗi lệch cột
-    df = conn.read(worksheet="Serial Number")
+    df = conn.read(worksheet="SerialNumber")
     return df
 
 # --- XỬ LÝ LẤY MÃ TỪ LINK QR ---
@@ -51,3 +51,4 @@ if search_serial:
         # Dòng này để bạn kiểm tra xem dữ liệu trong Sheet đang load lên là gì
         with st.expander("Nhấn vào đây để xem danh sách mã đang có trong hệ thống"):
             st.write(df['SerialNumber'].tolist())
+
