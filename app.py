@@ -84,7 +84,7 @@ else:
         col2.metric("Hết hạn", str(data.get('Ngay_Het_Han', 'N/A')))
         
         status_raw = str(data.get('Trang_Thai', '')).strip()
-        if "hành" in status_raw.lower():
+        if "còn" in status_raw.lower():
             st.info(f"✅ **TRẠNG THÁI:** {status_raw}")
         else:
             st.error(f"❌ **TRẠNG THÁI:** {status_raw}")
@@ -104,3 +104,4 @@ else:
     st.link_button("📞 Gọi hỗ trợ: 0903.736.414", "tel:0903736414", use_container_width=True, type="primary")
 
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
