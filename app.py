@@ -57,9 +57,9 @@ initial_value = url_serial
 #if search_query:
     #if not df.empty:
         # Tìm kiếm trong danh sách
-        result = df[df['Serial'] == search_query]
+        #result = df[df['Serial'] == search_query]
         
-        if not result.empty:
+         result.empty:
             st.success(f"✅ Tìm thấy thông tin bảo hành cho mã: {search_query}")
             st.divider()
             
@@ -84,6 +84,7 @@ initial_value = url_serial
 
 # Nút quay lại website chính ở thanh bên
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
