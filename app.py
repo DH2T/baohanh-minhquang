@@ -82,7 +82,7 @@ else:
         c2.metric("Hết hạn", str(st.session_state.data.get('Ngay_Het_Han', 'N/A')))
         
         status = st.session_state.data.get('Trang_Thai', 'N/A')
-        if "HẠN" in status:
+        if "CÒN" in status:
             st.info(f"✅ Trạng thái: {status}")
         else:
             st.error(f"❌ Trạng thái: {status}")
@@ -98,4 +98,5 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
