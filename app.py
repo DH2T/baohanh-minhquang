@@ -54,8 +54,8 @@ initial_value = url_serial
 #).strip()
 
 # --- 5. HIỂN THỊ KẾT QUẢ ---
-if search_query:
-    if not df.empty:
+#if search_query:
+    #if not df.empty:
         # Tìm kiếm trong danh sách
         result = df[df['Serial'] == search_query]
         
@@ -84,6 +84,7 @@ if search_query:
 
 # Nút quay lại website chính ở thanh bên
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
