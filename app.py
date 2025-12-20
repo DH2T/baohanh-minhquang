@@ -47,7 +47,7 @@ else:
     initial_value = ""
 
 # --- 4. GIAO DIỆN TRA CỨU ---
-search_query = st.text_input(
+#search_query = st.text_input(
     "Nhập Số Serial / Quét Mã QR:", 
     value=initial_value,
     placeholder="Đưa camera vào mã QR hoặc nhập tay tại đây..."
@@ -84,6 +84,7 @@ if search_query:
 
 # Nút quay lại website chính ở thanh bên
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
