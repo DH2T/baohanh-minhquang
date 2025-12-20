@@ -1,8 +1,7 @@
 streamlit
 pandas
-gspread
-google-auth
-streamlit_qrcode_scanner
+streamlit_gsheets
+datetime
 
 
 
