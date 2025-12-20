@@ -44,7 +44,7 @@ if "reset_trigger" not in st.session_state:
 # --- 5. GIAO DIỆN CHÍNH ---
 
 if not st.session_state.found:
-    st.header("⚡TRA CỨU BẢO HÀNH")
+    st.header("TRA CỨU BẢO HÀNH")
     st.write("Biến Áp Minh Quang - CTy DH2T")
     
     # Khu vực Quét QR - Sử dụng reset_trigger để làm mới scanner khi tra mã khác
@@ -104,6 +104,7 @@ else:
     st.link_button("📞 Gọi hỗ trợ: 0903.736.414", "tel:0903736414", use_container_width=True, type="primary")
 
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
