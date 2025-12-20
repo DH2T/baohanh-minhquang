@@ -12,17 +12,14 @@ st.set_page_config(
 )
 
 # --- 2. TỐI ƯU GIAO DIỆN (CSS) ---
-# Tách riêng để không bị lỗi xung đột dấu ngoặc Python
 st.markdown("""
     <style>
-    /* Ẩn Menu, Footer và Header của Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Ép tiêu đề nằm trên 1 hàng và tự co giãn cỡ chữ */
     .main-title {
-        font-size: clamp(1rem, 6vw, 1.8rem); 
+        font-size: clamp(1rem, 8vw, 1.8rem); 
         color: #FF9800;
         text-align: center;
         font-weight: bold;
@@ -39,15 +36,9 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Thu gọn khoảng cách đầu trang */
     .block-container {
         padding-top: 1.5rem;
         padding-bottom: 1rem;
-    }
-
-    /* Bo góc khung Container của Streamlit */
-    [data-testid="stVerticalBlock"] > div:has(div.stMetric) {
-        border-radius: 15px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -58,7 +49,6 @@ def load_data():
     try:
         creds = st.secrets["gservice_account"]
         gc = gspread.service_account_from_dict(creds)
-        # ID Sheet của bạn
         sh = gc.open_by_key("1RSgJ18oLmNkK2oL-pImYGLLiPBwENaXSG2_XDc-_pPk")
         df = pd.DataFrame(sh.worksheet("SerialNumber").get_all_records())
         df['Serial'] = df['Serial'].astype(str).str.strip()
@@ -82,10 +72,18 @@ def get_serial(text):
 if "found" not in st.session_state:
     st.session_state.found = False
 
+# HÀM RESET KHI BẤM NÚT "TRA CỨU MÃ KHÁC"
+def reset_search():
+    st.session_state.found = False
+    st.session_state.query_id = ""
+    st.session_state.data = None
+    # Xóa tham số trên URL để không bị tự động điền lại mã cũ
+    st.query_params.clear()
+
 # --- 6. GIAO DIỆN CHÍNH ---
 
 if not st.session_state.found:
-    # MÀN HÌNH CHỜ QUÉT/NHẬP
+    # MÀN HÌNH TRA CỨU
     st.markdown('<p class="main-title">TRA CỨU BẢO HÀNH</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">BIẾN ÁP MINH QUANG</p>', unsafe_allow_html=True)
     
@@ -95,7 +93,7 @@ if not st.session_state.found:
     url_val = st.query_params.get("serial", "")
     input_default = get_serial(scanned_val) if scanned_val else get_serial(url_val)
     
-    query = st.text_input("Nhập Số Serial sản phẩm:", value=input_default, placeholder="Đưa camera vào mã QR hoặc nhập tay...")
+    query = st.text_input("Nhập Số Serial sản phẩm:", value=input_default, placeholder="Nhập hoặc quét mã...")
 
     if query:
         if not df.empty:
@@ -107,9 +105,8 @@ if not st.session_state.found:
                 st.rerun()
             else:
                 st.error(f"❌ Không tìm thấy mã máy: {query}")
-
 else:
-    # MÀN HÌNH HIỂN THỊ KẾT QUẢ
+    # MÀN HÌNH KẾT QUẢ
     st.markdown('<p class="main-title">THÔNG TIN BẢO HÀNH</p>', unsafe_allow_html=True)
     
     data = st.session_state.data
@@ -119,11 +116,10 @@ else:
         st.caption(f"Số Serial: {st.session_state.query_id}")
         st.divider()
         
-        col1, col2 = st.columns(2)
-        col1.metric("Ngày mua", str(data.get('Ngay_Mua', 'N/A')))
-        col2.metric("Hết hạn", str(data.get('Ngay_Het_Han', 'N/A')))
+        c1, c2 = st.columns(2)
+        c1.metric("Ngày mua", str(data.get('Ngay_Mua', 'N/A')))
+        c2.metric("Hết hạn", str(data.get('Ngay_Het_Han', 'N/A')))
         
-        # Kiểm tra trạng thái không phân biệt hoa thường
         status_raw = str(data.get('Trang_Thai', '')).strip()
         if "còn" in status_raw.lower():
             st.success(f"✅ **TRẠNG THÁI:** {status_raw}")
@@ -132,11 +128,10 @@ else:
 
     st.write("") 
     
-    if st.button("🔍 Tra cứu mã khác", use_container_width=True):
-        st.session_state.found = False
-        st.rerun()
+    # NÚT RESET - ĐÃ ĐƯỢC FIX LỖI KHÔNG CHẠY
+    st.button("🔍 Tra cứu mã khác", on_click=reset_search, use_container_width=True)
         
     st.link_button("📞 Gọi hỗ trợ kỹ thuật", "tel:0903736414", use_container_width=True, type="primary")
 
-# Sidebar tối giản
+# Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
