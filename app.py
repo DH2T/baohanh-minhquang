@@ -41,10 +41,10 @@ url_serial = url_params.get("serial", "")
 # Thứ tự ưu tiên: 1. Vừa quét được > 2. Có sẵn trên Link > 3. Trống
 #if qr_code_value:
     #initial_value = qr_code_value
-if url_serial:
-    initial_value = url_serial
-else:
-    initial_value = ""
+#if url_serial:
+initial_value = url_serial
+#else:
+    #initial_value = ""
 
 # --- 4. GIAO DIỆN TRA CỨU ---
 #search_query = st.text_input(
@@ -84,6 +84,7 @@ if search_query:
 
 # Nút quay lại website chính ở thanh bên
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
