@@ -30,8 +30,8 @@ df = load_data_securely()
 # --- 3. NHẬN DIỆN THÔNG TIN (QR & URL) ---
 
 # A. Lấy mã QR từ Camera (Quét tự động)
-with st.expander("📷 Mở Camera quét mã QR", expanded=True):
-    qr_code_value = qrcode_scanner(key='qrcode_scanner')
+#with st.expander("📷 Mở Camera quét mã QR", expanded=True):
+    #qr_code_value = qrcode_scanner(key='qrcode_scanner')
 
 # B. Lấy mã Serial từ Link URL (Nếu khách truy cập từ link có ?serial=...)
 url_params = st.query_params
@@ -84,4 +84,5 @@ if search_query:
 
 # Nút quay lại website chính ở thanh bên
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
