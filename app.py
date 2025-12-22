@@ -64,7 +64,7 @@ df = load_data()
 # --- 4. HÀM XỬ LÝ CHUỖI QR/URL ---
 def get_serial(text):
     if not text: return ""
-    if "http" in text:
+    if "https" in text:
         try:
             return parse_qs(urlparse(text).query).get("serial", [text.split('/')[-1]])[0]
         except: return text
@@ -137,6 +137,7 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
