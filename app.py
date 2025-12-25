@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 import gspread
-from streamlit_qrcode_scanner import qrcode_scanner
+# THAY ĐỔI: Import thư viện mới
+from streamlit_qr_code_reader import qr_code_reader
 from urllib.parse import urlparse, parse_qs
 
 # --- 1. CẤU HÌNH TRANG ---
@@ -49,6 +50,7 @@ st.markdown("""
 @st.cache_data(ttl=300)
 def load_data():
     try:
+        # Đảm bảo bạn đã cấu hình st.secrets đúng
         creds = st.secrets["gservice_account"]
         gc = gspread.service_account_from_dict(creds)
         sh = gc.open_by_key("1RSgJ18oLmNkK2oL-pImYGLLiPBwENaXSG2_XDc-_pPk")
@@ -56,7 +58,7 @@ def load_data():
         df['Serial'] = df['Serial'].astype(str).str.strip()
         return df
     except Exception as e:
-        st.error(f"Lỗi kết nối dữ liệu: {e}")
+        # st.error(f"Lỗi kết nối dữ liệu: {e}") # Ẩn lỗi để giao diện sạch hơn nếu chưa config
         return pd.DataFrame()
 
 df = load_data()
@@ -74,12 +76,10 @@ def get_serial(text):
 if "found" not in st.session_state:
     st.session_state.found = False
 
-# HÀM RESET KHI BẤM NÚT "TRA CỨU MÃ KHÁC"
 def reset_search():
     st.session_state.found = False
     st.session_state.query_id = ""
     st.session_state.data = None
-    # Xóa tham số trên URL để không bị tự động điền lại mã cũ
     st.query_params.clear()
 
 # --- 6. GIAO DIỆN CHÍNH ---
@@ -89,13 +89,27 @@ if not st.session_state.found:
     st.markdown('<p class="main-title">TRA CỨU BẢO HÀNH</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">BIẾN ÁP MINH QUANG-CÔNG TY DH2T</p>', unsafe_allow_html=True)
     
+    # --- PHẦN CAMERA MỚI ---
     with st.expander("📷 MỞ CAMERA QUÉT MÃ QR", expanded=True):
-        scanned_val = qrcode_scanner(key='scanner')
+        # Sử dụng thư viện mới nhạy hơn
+        scanned_val = qr_code_reader(
+            key="qrcode",
+            show_qr_description=False,  # Ẩn hướng dẫn mặc định tiếng Anh
+            show_qr_border=True,        # Hiện khung xanh/cam để người dùng căn chỉnh
+            camera_facing="environment", # Bắt buộc dùng camera sau
+            border_color="#FF9800",     # Màu khung trùng màu thương hiệu
+        )
     
     url_val = st.query_params.get("serial", "")
+    # Logic: Ưu tiên mã quét được, nếu không thì lấy từ URL
     input_default = get_serial(scanned_val) if scanned_val else get_serial(url_val)
     
     query = st.text_input("Nhập Số Serial sản phẩm:", value=input_default, placeholder="Nhập hoặc quét mã...")
+
+    # Tự động submit nếu có kết quả từ Camera (UX tốt hơn)
+    if scanned_val and not st.session_state.get('auto_submit_trigger'):
+        st.session_state.auto_submit_trigger = True
+        st.rerun()
 
     if query:
         if not df.empty:
@@ -104,9 +118,12 @@ if not st.session_state.found:
                 st.session_state.found = True
                 st.session_state.data = match.iloc[0]
                 st.session_state.query_id = query
+                st.session_state.auto_submit_trigger = False # Reset trigger
                 st.rerun()
             else:
                 st.error(f"❌ Không tìm thấy mã máy: {query}")
+        else:
+             st.warning("⚠️ Chưa kết nối được dữ liệu bảo hành.")
 else:
     # MÀN HÌNH KẾT QUẢ
     st.markdown('<p class="main-title">THÔNG TIN BẢO HÀNH</p>', unsafe_allow_html=True)
@@ -130,19 +147,9 @@ else:
 
     st.write("") 
     
-    # NÚT RESET - ĐÃ ĐƯỢC FIX LỖI KHÔNG CHẠY
     st.button("🔍 Tra cứu mã khác", on_click=reset_search, use_container_width=True)
         
     st.link_button("📞 Gọi hỗ trợ kỹ thuật", "tel:0903736414", use_container_width=True, type="primary")
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
-
-
-
-
-
-
-
-
-
