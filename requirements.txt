@@ -4,3 +4,4 @@ gspread
 google-auth
 opencv-python-headless
 numpy
+streamlit-webrtc
