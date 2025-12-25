@@ -2,6 +2,5 @@ streamlit
 pandas
 gspread
 google-auth
-opencv-python-headless
-numpy
-streamlit-webrtc
+streamlit_qrcode_scanner
+
