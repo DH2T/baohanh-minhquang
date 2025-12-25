@@ -66,7 +66,7 @@ def get_serial(text):
     if not text: return ""
     if "https" in text:
         try:
-            return parse_qs(urlparse(text).query).get("serial", [text.split('/')[-1]])[0]
+            return parse_qs(urlparse(text).query).get("s", [text.split('/')[-1]])[0]
         except: return text
     return text
 
@@ -92,7 +92,7 @@ if not st.session_state.found:
     with st.expander("📷 MỞ CAMERA QUÉT MÃ QR", expanded=True):
         scanned_val = qrcode_scanner(key='scanner')
     
-    url_val = st.query_params.get("serial", "")
+    url_val = st.query_params.get("s", "")
     input_default = get_serial(scanned_val) if scanned_val else get_serial(url_val)
     
     query = st.text_input("Nhập Số Serial sản phẩm:", value=input_default, placeholder="Nhập hoặc quét mã...")
@@ -106,7 +106,7 @@ if not st.session_state.found:
                 st.session_state.query_id = query
                 st.rerun()
             else:
-                st.error(f"❌ Không tìm thấy mã máy: {query}")
+                st.error(f"❌ Không tìm thấy mã biến áp: {query}")
 else:
     # MÀN HÌNH KẾT QUẢ
     st.markdown('<p class="main-title">THÔNG TIN BẢO HÀNH</p>', unsafe_allow_html=True)
@@ -137,6 +137,7 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
