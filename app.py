@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import gspread
-# THAY ĐỔI: Import thư viện mới
-from streamlit_qr_code_reader import qr_code_reader
+import cv2
+import numpy as np
 from urllib.parse import urlparse, parse_qs
 
 # --- 1. CẤU HÌNH TRANG ---
@@ -38,11 +38,8 @@ st.markdown("""
         font-size: 0.9rem;
         margin-bottom: 20px;
     }
-
-    .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 1rem;
-    }
+    
+    /* Ẩn nút chụp ảnh mặc định xấu xí, chỉnh lại sau */
     </style>
     """, unsafe_allow_html=True)
 
@@ -58,12 +55,31 @@ def load_data():
         df['Serial'] = df['Serial'].astype(str).str.strip()
         return df
     except Exception as e:
-        # st.error(f"Lỗi kết nối dữ liệu: {e}") # Ẩn lỗi để giao diện sạch hơn nếu chưa config
         return pd.DataFrame()
 
 df = load_data()
 
-# --- 4. HÀM XỬ LÝ CHUỖI QR/URL ---
+# --- 4. HÀM XỬ LÝ ẢNH QR (OPENCV) ---
+def decode_qr_image(image_file):
+    if image_file is None:
+        return ""
+    try:
+        # Chuyển file upload thành mảng numpy để OpenCV đọc
+        file_bytes = np.asarray(bytearray(image_file.read()), dtype=np.uint8)
+        img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        
+        # Dùng OpenCV để phát hiện mã QR
+        detector = cv2.QRCodeDetector()
+        data, bbox, _ = detector.detectAndDecode(img)
+        
+        if data:
+            return data
+        else:
+            return ""
+    except Exception:
+        return ""
+
+# --- 5. HÀM XỬ LÝ URL ---
 def get_serial(text):
     if not text: return ""
     if "https" in text:
@@ -72,7 +88,7 @@ def get_serial(text):
         except: return text
     return text
 
-# --- 5. QUẢN LÝ TRẠNG THÁI ---
+# --- 6. QUẢN LÝ TRẠNG THÁI ---
 if "found" not in st.session_state:
     st.session_state.found = False
 
@@ -82,31 +98,34 @@ def reset_search():
     st.session_state.data = None
     st.query_params.clear()
 
-# --- 6. GIAO DIỆN CHÍNH ---
+# --- 7. GIAO DIỆN CHÍNH ---
 
 if not st.session_state.found:
     # MÀN HÌNH TRA CỨU
     st.markdown('<p class="main-title">TRA CỨU BẢO HÀNH</p>', unsafe_allow_html=True)
     st.markdown('<p class="sub-title">BIẾN ÁP MINH QUANG-CÔNG TY DH2T</p>', unsafe_allow_html=True)
     
-    # --- PHẦN CAMERA MỚI ---
-    with st.expander("📷 MỞ CAMERA QUÉT MÃ QR", expanded=True):
-        # Sử dụng thư viện mới nhạy hơn
-        scanned_val = qr_code_reader(
-            key="qrcode",
-            show_qr_description=False,  # Ẩn hướng dẫn mặc định tiếng Anh
-            show_qr_border=True,        # Hiện khung xanh/cam để người dùng căn chỉnh
-            camera_facing="environment", # Bắt buộc dùng camera sau
-            border_color="#FF9800",     # Màu khung trùng màu thương hiệu
-        )
+    # --- PHẦN CAMERA CHỤP ẢNH ---
+    with st.expander("📷 CHỤP MÃ QR ĐỂ TRA CỨU", expanded=True):
+        st.caption("💡 Mẹo: Bấm 'Take Photo' để chụp. Camera sẽ tự lấy nét rõ hơn quay video.")
+        # Sử dụng Native Camera của Streamlit (Chạy cực ổn định)
+        img_file = st.camera_input("Hướng camera vào mã QR", label_visibility="hidden")
     
+    # Xử lý ảnh chụp ngay lập tức
+    scanned_val = ""
+    if img_file is not None:
+        raw_qr = decode_qr_image(img_file)
+        if raw_qr:
+            scanned_val = raw_qr
+        else:
+            st.toast("⚠️ Ảnh bị mờ hoặc không có mã QR. Vui lòng chụp lại gần hơn!", icon="❌")
+
     url_val = st.query_params.get("serial", "")
-    # Logic: Ưu tiên mã quét được, nếu không thì lấy từ URL
     input_default = get_serial(scanned_val) if scanned_val else get_serial(url_val)
     
-    query = st.text_input("Nhập Số Serial sản phẩm:", value=input_default, placeholder="Nhập hoặc quét mã...")
+    query = st.text_input("Nhập Số Serial sản phẩm:", value=input_default, placeholder="Nhập hoặc chụp mã...")
 
-    # Tự động submit nếu có kết quả từ Camera (UX tốt hơn)
+    # Tự động submit nếu có kết quả từ Camera
     if scanned_val and not st.session_state.get('auto_submit_trigger'):
         st.session_state.auto_submit_trigger = True
         st.rerun()
@@ -118,7 +137,7 @@ if not st.session_state.found:
                 st.session_state.found = True
                 st.session_state.data = match.iloc[0]
                 st.session_state.query_id = query
-                st.session_state.auto_submit_trigger = False # Reset trigger
+                st.session_state.auto_submit_trigger = False
                 st.rerun()
             else:
                 st.error(f"❌ Không tìm thấy mã máy: {query}")
