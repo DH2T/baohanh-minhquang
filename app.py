@@ -120,7 +120,7 @@ else:
         
         c1, c2 = st.columns(2)
         c1.metric("Ngày mua", str(data.get('Ngay_Mua', 'N/A')))
-        c2.metric("Hết hạn", str(data.get('Ngay_Het_Han', 'N/A')))
+        c2.metric("Ngày hết hạn", str(data.get('Ngay_Het_Han', 'N/A')))
         
         status_raw = str(data.get('Trang_Thai', '')).strip()
         if "còn" in status_raw.lower():
@@ -137,6 +137,7 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
