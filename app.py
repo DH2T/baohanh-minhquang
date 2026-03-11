@@ -51,7 +51,7 @@ def load_data():
     try:
         creds = st.secrets["gservice_account"]
         gc = gspread.service_account_from_dict(creds)
-        sh = gc.open_by_key("1RSgJ18oLmNkK2oL-pImYGLLiPBwENaXSG2_XDc-_pPk")
+        sh = gc.open_by_key("1I-NkF9cNXATFVv9igc2lC6GH_vjL7JKAvo-zZxBcXNU")
         df = pd.DataFrame(sh.worksheet("SerialNumber").get_all_records())
         df['Serial'] = df['Serial'].astype(str).str.strip()
         return df
@@ -137,6 +137,7 @@ else:
 
 # Sidebar
 st.sidebar.page_link("https://bienapminhquang.com", label="Quay lại Website", icon="🏠")
+
 
 
 
